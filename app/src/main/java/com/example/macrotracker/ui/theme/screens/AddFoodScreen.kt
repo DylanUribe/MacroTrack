@@ -18,14 +18,16 @@ import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import com.example.macrotracker.model.FoodItemRow
 import com.example.macrotracker.model.USDAApi
-
-
+import com.example.macrotracker.viewmodel.AuthViewModel
 
 @Composable
 fun AddFoodScreen(
     foodRepository: FoodRepository,
+    authViewModel: AuthViewModel,
+    dashboardViewModel: DashboardViewModel,
     onFoodAdded: () -> Unit
-) {
+)
+ {
     var query by remember { mutableStateOf("") }
     var results by remember { mutableStateOf(listOf<FoodItem>()) }
     val scope = rememberCoroutineScope()
@@ -85,16 +87,24 @@ fun AddFoodScreen(
             confirmButton = {
                 TextButton(onClick = {
                     scope.launch {
-                        val savedFoodId = foodRepository.addFood(selectedFood!!)
+                        val currentUserId = authViewModel.currentUser?.id
+                        if (currentUserId != null && selectedFood != null) {
+                            val savedFoodId = foodRepository.addFood(selectedFood!!)
+                            val log = FoodLog(
+                                foodId = savedFoodId.toInt(),  // O selectedFood.id si ya es válido
+                                userId = currentUserId,
+                                quantity = quantity.toIntOrNull() ?: 1,
+                                date = DashboardViewModel.todayDate()
+                            )
+                            foodRepository.addFoodLog(log)
+                            dashboardViewModel.refreshData()
+                            selectedFood = null
+                            onFoodAdded()
 
-                        val log = FoodLog(
-                            foodId = savedFoodId.toInt(), // Convertir de Long a Int si es necesario
-                            quantity = quantity.toIntOrNull() ?: 1,
-                            date = DashboardViewModel.todayDate()
-                        )
-                        foodRepository.addFoodLog(log)
-                        selectedFood = null
-                        onFoodAdded()
+                        }
+                        else {
+                            // Opcional: podría mostrar un mensaje de error o log
+                        }
                     }
                 }) {
                     Text("Agregar")

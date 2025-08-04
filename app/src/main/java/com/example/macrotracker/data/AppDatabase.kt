@@ -10,7 +10,7 @@ import com.example.macrotracker.model.User
 
 @Database(
     entities = [User::class, FoodItem::class, FoodLog::class],
-    version = 2
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

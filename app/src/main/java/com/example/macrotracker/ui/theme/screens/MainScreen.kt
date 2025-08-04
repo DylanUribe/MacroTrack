@@ -22,7 +22,7 @@ import com.example.macrotracker.viewmodel.DashboardViewModelFactory
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(authViewModel: AuthViewModel, onLogout: () -> Unit) { // <-- recibe onLogout
+fun MainScreen(authViewModel: AuthViewModel, onLogout: () -> Unit) {
     val navController: NavHostController = rememberNavController()
     val context = LocalContext.current
 
@@ -32,45 +32,59 @@ fun MainScreen(authViewModel: AuthViewModel, onLogout: () -> Unit) { // <-- reci
         foodLogDao = database.foodLogDao()
     )
 
+    val userId = authViewModel.currentUser?.id
+    // Creamos dashboardVM solo si hay userId válido
+    val dashboardVM = if (userId != null) {
+        viewModel<DashboardViewModel>(
+            key = "DashboardViewModel_$userId",
+            factory = DashboardViewModelFactory(userId, foodRepository)        )
+    } else null
+
     Scaffold(
         bottomBar = {
             BottomNavigationBar(navController)
         }
     ) { innerPadding ->
+
         NavHost(
             navController = navController,
             startDestination = BottomNavItem.Dashboard.route,
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Dashboard.route) {
-                val dashboardVM = viewModel<DashboardViewModel>(
-                    factory = DashboardViewModelFactory(foodRepository)
-                )
-                DashboardScreen(
-                    viewModel = dashboardVM,
-                    onAddFoodClick = {
-                        navController.navigate(BottomNavItem.AddFood.route)
-                    }
-                )
+                if (dashboardVM != null) {
+                    DashboardScreen(
+                        viewModel = dashboardVM,
+                        onAddFoodClick = {
+                            navController.navigate(BottomNavItem.AddFood.route)
+                        }
+                    )
+                }
             }
 
             composable(BottomNavItem.AddFood.route) {
-                AddFoodScreen(
-                    foodRepository = RepositoryProvider.foodRepository,
-                    onFoodAdded = {
-                        navController.navigate(BottomNavItem.Dashboard.route) {
-                            popUpTo(BottomNavItem.Dashboard.route) { inclusive = true }
+                if (dashboardVM != null) {
+                    AddFoodScreen(
+                        foodRepository = foodRepository,
+                        authViewModel = authViewModel,
+                        dashboardViewModel = dashboardVM, // ← esta línea es la que faltaba
+                        onFoodAdded = {
+                            dashboardVM.refreshData()
+                            navController.navigate(BottomNavItem.Dashboard.route) {
+                                popUpTo(BottomNavItem.Dashboard.route) { inclusive = true }
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
 
             composable(BottomNavItem.Profile.route) {
                 ProfileScreen(
                     authViewModel = authViewModel,
-                    onLogout = onLogout  // <-- Pasamos el callback aquí
+                    onLogout = onLogout
                 )
             }
         }
     }
 }
+

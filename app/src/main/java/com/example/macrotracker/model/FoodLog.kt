@@ -7,7 +7,9 @@ import androidx.room.PrimaryKey
 data class FoodLog(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val foodId: Int,
-    val date: String, // YYYY-MM-DD
-    val quantity: Int // porciones o gramos (depende cómo definas)
+    val userId: Int,
+    val quantity: Int,
+    val date: String
 )
+
 

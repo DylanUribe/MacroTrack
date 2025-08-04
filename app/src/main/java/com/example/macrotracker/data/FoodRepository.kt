@@ -11,8 +11,9 @@ class FoodRepository(
     val foodLogsFlow: Flow<List<FoodLog>> = foodLogDao.getAllLogs()
 
     suspend fun addFood(food: FoodItem): Long { return foodDao.insertFood(food) }
-    suspend fun searchFoods(query: String) = foodDao.searchFoods(query)
     suspend fun addFoodLog(log: FoodLog) = foodLogDao.insert(log)
-    suspend fun getLogsForDate(date: String) = foodLogDao.getLogsByDate(date)
-    suspend fun getFoodById(id: Int): FoodItem? = foodDao.getFoodById(id)
+    suspend fun getLogsForUserAndDate(userId: Int, date: String): List<FoodLog> {
+        return foodLogDao.getLogsByUserAndDate(userId, date)
+    }
 }
+

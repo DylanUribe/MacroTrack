@@ -1,8 +1,5 @@
 package com.example.macrotracker.viewmodel
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.macrotracker.data.FoodRepository
@@ -14,8 +11,9 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class DashboardViewModel(
+    private val userId: Int,
     private val foodRepository: FoodRepository
-) : ViewModel() {
+    ) : ViewModel() {
 
     private val _dailyLog = MutableStateFlow(
         DailyLog(
@@ -41,7 +39,8 @@ class DashboardViewModel(
     private fun loadDailyLog() {
         viewModelScope.launch {
             val today = todayDate()
-            val logs = foodRepository.getLogsForDate(today)
+            val logs = foodRepository.getLogsForUserAndDate(userId, today)
+
 
             var cal = 0
             var prot = 0

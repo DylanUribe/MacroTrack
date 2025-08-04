@@ -24,54 +24,66 @@ sealed class Screen(val route: String) {
 @Composable
 fun AppNavigation(authViewModel: AuthViewModel, foodRepository: FoodRepository) {
     val navController = rememberNavController()
+    val currentUser = authViewModel.currentUser
 
-    NavHost(navController = navController, startDestination = Screen.Login.route) {
-
-        composable(Screen.Login.route) {
-            LoginScreen(
-                authViewModel = authViewModel,
-                onLoginSuccess = {
-                    navController.navigate(Screen.Home.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+    if (currentUser != null) {
+        // Usuario autenticado, mostrar la pantalla principal
+        MainScreen(
+            authViewModel = authViewModel,
+            onLogout = {
+                authViewModel.logout() // Asegúrate de tener esta función
+                navController.navigate(Screen.Login.route) {
+                    popUpTo(Screen.Home.route) { inclusive = true }
+                }
+            }
+        )
+    } else {
+        // Usuario no autenticado, mostrar navegación entre login y registro
+        NavHost(navController = navController, startDestination = Screen.Login.route) {
+            composable(Screen.Login.route) {
+                LoginScreen(
+                    authViewModel = authViewModel,
+                    onLoginSuccess = {
+                        navController.navigate(Screen.Home.route) {
+                            popUpTo(Screen.Login.route) { inclusive = true }
+                        }
+                    },
+                    onRegisterClick = {
+                        navController.navigate(Screen.Register.route)
                     }
-                },
-                onRegisterClick = {
-                    navController.navigate(Screen.Register.route)
-                }
-            )
-        }
+                )
+            }
 
-        composable(Screen.Register.route) {
-            RegisterScreen(
-                authViewModel = authViewModel,
-                onRegisterSuccess = {
-                    navController.popBackStack()
-                }
-            )
-        }
-
-        composable(Screen.Home.route) {
-            MainScreen(
-                authViewModel = authViewModel,
-                onLogout = {
-                    // Al hacer logout, navegamos a Login y limpiamos la pila
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Home.route) { inclusive = true }
+            composable(Screen.Register.route) {
+                RegisterScreen(
+                    authViewModel = authViewModel,
+                    onRegisterSuccess = {
+                        navController.popBackStack()
                     }
-                }
-            )
-        }
+                )
+            }
 
-        // Opcional si usas este screen directo:
-        composable(Screen.Profile.route) {
-            ProfileScreen(
-                authViewModel = authViewModel,
-                onLogout = {
-                    navController.navigate(Screen.Login.route) {
-                        popUpTo(Screen.Profile.route) { inclusive = true }
+            composable(Screen.Home.route) {
+                MainScreen(
+                    authViewModel = authViewModel,
+                    onLogout = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Home.route) { inclusive = true }
+                        }
                     }
-                }
-            )
+                )
+            }
+
+            composable(Screen.Profile.route) {
+                ProfileScreen(
+                    authViewModel = authViewModel,
+                    onLogout = {
+                        navController.navigate(Screen.Login.route) {
+                            popUpTo(Screen.Profile.route) { inclusive = true }
+                        }
+                    }
+                )
+            }
         }
     }
 }
