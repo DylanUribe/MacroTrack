@@ -20,12 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.ButtonDefaults
 
 import com.example.macrotracker.viewmodel.AuthViewModel
 
 @Composable
-fun ProfileScreen(authViewModel: AuthViewModel) {
-    var user = authViewModel.currentUser ?: return
+fun ProfileScreen(
+    authViewModel: AuthViewModel,
+    onLogout: () -> Unit // Callback para logout
+) {
+    val user = authViewModel.currentUser ?: return
 
     var username by remember { mutableStateOf(user.username) }
     var age by remember { mutableStateOf(user.age.toString()) }
@@ -42,24 +46,69 @@ fun ProfileScreen(authViewModel: AuthViewModel) {
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        OutlinedTextField(value = username, onValueChange = { username = it }, label = { Text("Usuario") }, modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = age, onValueChange = { age = it }, label = { Text("Edad") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = weight, onValueChange = { weight = it }, label = { Text("Peso") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
-        OutlinedTextField(value = height, onValueChange = { height = it }, label = { Text("Estatura") }, keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number), modifier = Modifier.fillMaxWidth())
+        OutlinedTextField(
+            value = username,
+            onValueChange = { username = it },
+            label = { Text("Usuario") },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = age,
+            onValueChange = { age = it },
+            label = { Text("Edad") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = weight,
+            onValueChange = { weight = it },
+            label = { Text("Peso") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        OutlinedTextField(
+            value = height,
+            onValueChange = { height = it },
+            label = { Text("Estatura") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = {
-            authViewModel.updateProfile(
-                user.copy(
-                    username = username,
-                    age = age.toIntOrNull() ?: 0,
-                    weight = weight.toFloatOrNull() ?: 0f,
-                    height = height.toFloatOrNull() ?: 0f
+        Button(
+            onClick = {
+                authViewModel.updateProfile(
+                    user.copy(
+                        username = username,
+                        age = age.toIntOrNull() ?: 0,
+                        weight = weight.toFloatOrNull() ?: 0f,
+                        height = height.toFloatOrNull() ?: 0f
+                    )
                 )
-            )
-        }, modifier = Modifier.fillMaxWidth()) {
+            },
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Text("Guardar Cambios")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botón de Logout
+        Button(
+            onClick = {
+                authViewModel.logout()
+                onLogout() // Navegación o acción al hacer logout
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error
+            )
+        ) {
+            Text("Cerrar sesión", color = MaterialTheme.colorScheme.onError)
         }
     }
 }

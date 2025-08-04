@@ -38,6 +38,11 @@ class AuthViewModel(private val repository: UserRepository) : ViewModel() {
             currentUser = user
         }
     }
+
+    // ✅ Ahora sí: función logout correctamente ubicada
+    fun logout() {
+        currentUser = null
+    }
 }
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -59,4 +64,9 @@ fun RequestPermissionsScreen(onPermissionsGranted: () -> Unit) {
     } else {
         Text("Se necesitan permisos para continuar")
     }
+
+
+
 }
+
+

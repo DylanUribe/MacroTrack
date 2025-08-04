@@ -22,11 +22,10 @@ import com.example.macrotracker.viewmodel.DashboardViewModelFactory
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun MainScreen(authViewModel: AuthViewModel) {
+fun MainScreen(authViewModel: AuthViewModel, onLogout: () -> Unit) { // <-- recibe onLogout
     val navController: NavHostController = rememberNavController()
     val context = LocalContext.current
 
-    // Instancia del repositorio de alimentos (puede usarse en múltiples pantallas)
     val database = AppDatabase.getDatabase(context)
     val foodRepository = FoodRepository(
         foodDao = database.foodDao(),
@@ -67,7 +66,10 @@ fun MainScreen(authViewModel: AuthViewModel) {
             }
 
             composable(BottomNavItem.Profile.route) {
-                ProfileScreen(authViewModel)
+                ProfileScreen(
+                    authViewModel = authViewModel,
+                    onLogout = onLogout  // <-- Pasamos el callback aquí
+                )
             }
         }
     }
