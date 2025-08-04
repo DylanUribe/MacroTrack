@@ -13,6 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.macrotracker.data.AppDatabase
 import com.example.macrotracker.data.FoodRepository
+import com.example.macrotracker.data.RepositoryProvider
 import com.example.macrotracker.navigation.BottomNavItem
 import com.example.macrotracker.navigation.BottomNavigationBar
 import com.example.macrotracker.viewmodel.AuthViewModel
@@ -56,7 +57,7 @@ fun MainScreen(authViewModel: AuthViewModel) {
 
             composable(BottomNavItem.AddFood.route) {
                 AddFoodScreen(
-                    foodRepository = foodRepository,
+                    foodRepository = RepositoryProvider.foodRepository,
                     onFoodAdded = {
                         navController.navigate(BottomNavItem.Dashboard.route) {
                             popUpTo(BottomNavItem.Dashboard.route) { inclusive = true }

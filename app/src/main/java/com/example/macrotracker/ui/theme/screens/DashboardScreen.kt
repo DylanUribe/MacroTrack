@@ -10,10 +10,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.macrotracker.viewmodel.DashboardViewModel
+import androidx.compose.runtime.*
+import androidx.compose.runtime.collectAsState
+
 
 @Composable
 fun DashboardScreen(viewModel: DashboardViewModel, onAddFoodClick: () -> Unit) {
-    val log = viewModel.dailyLog
+    val log by viewModel.dailyLog.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()

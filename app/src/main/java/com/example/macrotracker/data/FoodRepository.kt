@@ -2,14 +2,17 @@ package com.example.macrotracker.data
 
 import com.example.macrotracker.model.FoodItem
 import com.example.macrotracker.model.FoodLog
+import kotlinx.coroutines.flow.Flow
 
 class FoodRepository(
-    public val foodDao: FoodDao,
+    val foodDao: FoodDao,
     private val foodLogDao: FoodLogDao
 ) {
-    suspend fun addFood(food: FoodItem) = foodDao.insertFood(food)
+    val foodLogsFlow: Flow<List<FoodLog>> = foodLogDao.getAllLogs()
+
+    suspend fun addFood(food: FoodItem): Long { return foodDao.insertFood(food) }
     suspend fun searchFoods(query: String) = foodDao.searchFoods(query)
-    suspend fun addFoodLog(log: FoodLog) = foodLogDao.insertFoodLog(log)
+    suspend fun addFoodLog(log: FoodLog) = foodLogDao.insert(log)
     suspend fun getLogsForDate(date: String) = foodLogDao.getLogsByDate(date)
     suspend fun getFoodById(id: Int): FoodItem? = foodDao.getFoodById(id)
 }

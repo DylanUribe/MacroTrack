@@ -12,3 +12,4 @@ data class FoodItem(
     val carbs: Int,
     val fat: Int
 )
+

@@ -10,3 +10,4 @@ data class FoodLog(
     val date: String, // YYYY-MM-DD
     val quantity: Int // porciones o gramos (depende cómo definas)
 )
+

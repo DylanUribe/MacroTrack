@@ -7,6 +7,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.macrotracker.data.FoodRepository
 import com.example.macrotracker.model.DailyLog
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -15,7 +17,7 @@ class DashboardViewModel(
     private val foodRepository: FoodRepository
 ) : ViewModel() {
 
-    var dailyLog by mutableStateOf(
+    private val _dailyLog = MutableStateFlow(
         DailyLog(
             date = todayDate(),
             calories = 0,
@@ -24,7 +26,8 @@ class DashboardViewModel(
             fat = 0
         )
     )
-        private set
+    val dailyLog: StateFlow<DailyLog> = _dailyLog
+
 
     val calorieGoal = 2000
     val proteinGoal = 150
@@ -55,7 +58,7 @@ class DashboardViewModel(
                 }
             }
 
-            dailyLog = DailyLog(today, cal, prot, carb, fat)
+            _dailyLog.value = DailyLog(today, cal, prot, carb, fat)
         }
     }
 
