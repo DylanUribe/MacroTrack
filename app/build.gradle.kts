@@ -61,6 +61,8 @@ dependencies {
 
     // Material3
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+
 
     // Otras dependencias
     implementation("com.google.accompanist:accompanist-permissions:0.30.1")

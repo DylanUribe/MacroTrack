@@ -2,21 +2,15 @@ package com.example.macrotracker.navigation
 
 import LoginScreen
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.macrotracker.data.FoodRepository
 import com.example.macrotracker.ui.theme.screens.AddFoodScreen
-import com.example.macrotracker.ui.theme.screens.HomeScreen
 import com.example.macrotracker.ui.theme.screens.ProfileScreen
 import com.example.macrotracker.ui.theme.screens.RegisterScreen
-import com.example.macrotracker.ui.theme.screens.DashboardScreen
 import com.example.macrotracker.ui.theme.screens.MainScreen
 import com.example.macrotracker.viewmodel.AuthViewModel
-import com.example.macrotracker.viewmodel.DashboardViewModel
 
 sealed class Screen(val route: String) {
     object Login : Screen("login")
@@ -57,12 +51,27 @@ fun AppNavigation(authViewModel: AuthViewModel, foodRepository: FoodRepository) 
         }
 
         composable(Screen.Home.route) {
-            MainScreen(authViewModel = authViewModel)
+            MainScreen(
+                authViewModel = authViewModel,
+                onLogout = {
+                    // Al hacer logout, navegamos a Login y limpiamos la pila
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            )
         }
 
-
+        // Opcional si usas este screen directo:
         composable(Screen.Profile.route) {
-            ProfileScreen(authViewModel = authViewModel)
+            ProfileScreen(
+                authViewModel = authViewModel,
+                onLogout = {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Profile.route) { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
